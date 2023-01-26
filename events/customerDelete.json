@@ -1,0 +1,5 @@
+{
+    "service":"CUSTOMER",
+    "operation":"DELETE",
+    "customer_id":"123456"
+}

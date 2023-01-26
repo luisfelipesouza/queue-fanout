@@ -1,0 +1,14 @@
+{
+    "service":"ORDER",
+    "operation":"UPDATE",
+    "order_id":"123123",
+    "currency":"BRL",
+    "price":600000,
+    "items":[
+        {
+            "product": "Product #1",
+            "sku":"111",
+            "price": 200000
+        }
+    ]
+}

@@ -1,0 +1,231 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sample SAM Template for sqs-test-queue
+
+Resources:
+  SnsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: sns-topic
+  
+#CUSTOMERS_CREATE
+  CustomerSqsQueueCreate:
+    Type: AWS::SQS::Queue
+  
+  CustomerQueueSubscriptionCreate:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SnsTopic
+      Endpoint: !GetAtt CustomerSqsQueueCreate.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+      FilterPolicy: "{\"service\":[\"CUSTOMER\"], \"operation\":[\"CREATE\"]}"
+      FilterPolicyScope: "MessageBody"
+  
+  CustomerCreateLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/Customers
+      Handler: create.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        SqsTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt CustomerSqsQueueCreate.Arn
+            #FilterCriteria:
+            #  Filters: 
+            #    - Pattern: "{\"body\":{\"operation\":[\"CREATE\"]}}"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName:
+              !GetAtt CustomerSqsQueueCreate.QueueName
+
+#CUSTOMERS_DELETE
+  CustomerSqsQueueDelete:
+    Type: AWS::SQS::Queue
+  
+  CustomerQueueSubscriptionDelete:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SnsTopic
+      Endpoint: !GetAtt CustomerSqsQueueDelete.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+      FilterPolicy: "{\"service\":[\"CUSTOMER\"], \"operation\":[\"DELETE\"]}"
+      FilterPolicyScope: "MessageBody"
+
+  CustomerDeleteLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/Customers
+      Handler: delete.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        SqsTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt CustomerSqsQueueDelete.Arn
+            #FilterCriteria:
+            #  Filters: 
+            #    - Pattern: "{\"body\":{\"operation\":[\"DELETE\"]}}"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName:
+              !GetAtt CustomerSqsQueueDelete.QueueName
+  
+#CUSTOMERS_UPDATE
+  CustomerSqsQueueUpdate:
+    Type: AWS::SQS::Queue
+  
+  CustomerQueueSubscriptionUpdate:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SnsTopic
+      Endpoint: !GetAtt CustomerSqsQueueUpdate.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+      FilterPolicy: "{\"service\":[\"CUSTOMER\"], \"operation\":[\"UPDATE\"]}"
+      FilterPolicyScope: "MessageBody"
+
+  CustomerUpdateLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/Customers
+      Handler: update.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        SqsTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt CustomerSqsQueueUpdate.Arn
+            #FilterCriteria:
+            #  Filters: 
+            #    - Pattern: "{\"body\":{\"operation\":[\"UPDATE\"]}}"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName:
+              !GetAtt CustomerSqsQueueUpdate.QueueName
+
+#ORDERS_CREATE
+  OrderSqsQueueCreate:
+    Type: AWS::SQS::Queue
+
+  OrderQueueSubscriptionCreate:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SnsTopic
+      Endpoint: !GetAtt OrderSqsQueueCreate.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+      FilterPolicy: "{\"service\":[\"ORDER\"], \"operation\":[\"CREATE\"]}"
+      FilterPolicyScope: "MessageBody"
+  
+  OrderCreateLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/Orders
+      Handler: create.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        SqsTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OrderSqsQueueCreate.Arn
+            #FilterCriteria:
+            #  Filters: 
+            #    - Pattern: "{\"body\":{\"operation\":[\"CREATE\"]}}"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName:
+              !GetAtt OrderSqsQueueCreate.QueueName
+  
+#ORDERS_DELETE
+  OrderSqsQueueDelete:
+    Type: AWS::SQS::Queue
+
+  OrderQueueSubscriptionDelete:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SnsTopic
+      Endpoint: !GetAtt OrderSqsQueueDelete.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+      FilterPolicy: "{\"service\":[\"ORDER\"], \"operation\":[\"DELETE\"]}"
+      FilterPolicyScope: "MessageBody"
+
+  OrderDeleteLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/Orders
+      Handler: delete.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        SqsTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OrderSqsQueueDelete.Arn
+            #FilterCriteria:
+            #  Filters: 
+            #    - Pattern: "{\"body\":{\"operation\":[\"DELETE\"]}}"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName:
+              !GetAtt OrderSqsQueueDelete.QueueName
+  
+#ORDERS_Update
+  OrderSqsQueueUpdate:
+    Type: AWS::SQS::Queue
+
+  OrderQueueSubscriptionUpdate:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref SnsTopic
+      Endpoint: !GetAtt OrderSqsQueueUpdate.Arn
+      Protocol: sqs
+      RawMessageDelivery: true
+      FilterPolicy: "{\"service\":[\"ORDER\"], \"operation\":[\"UPDATE\"]}"
+      FilterPolicyScope: "MessageBody"
+
+  OrderUpdateLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/Orders
+      Handler: update.lambdaHandler
+      Runtime: nodejs14.x
+      Events:
+        SqsTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OrderSqsQueueUpdate.Arn
+            #FilterCriteria:
+            #  Filters: 
+            #    - Pattern: "{\"body\":{\"operation\":[\"UPDATE\"]}}"
+      Policies:
+        - SQSPollerPolicy:
+            QueueName:
+              !GetAtt OrderSqsQueueUpdate.QueueName
+
+#POLICY
+  SnsToSqsPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - Ref: CustomerSqsQueueCreate
+        - Ref: CustomerSqsQueueDelete
+        - Ref: CustomerSqsQueueUpdate
+        - Ref: OrderSqsQueueCreate
+        - Ref: OrderSqsQueueDelete
+        - Ref: OrderSqsQueueUpdate
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: 
+              - sqs:SendMessage
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  !Ref SnsTopic

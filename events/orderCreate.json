@@ -1,0 +1,23 @@
+{
+    "service":"ORDER",
+    "operation":"CREATE",
+    "currency":"BRL",
+    "price":500000,
+    "items":[
+        {
+            "product": "Product #1",
+            "sku":"111",
+            "price": 100000
+        },
+        {
+            "product": "Product #2",
+            "sku":"222",
+            "price": 150000
+        },
+        {
+            "product": "Product #3",
+            "sku":"333",
+            "price": 250000
+        }
+    ]
+}
